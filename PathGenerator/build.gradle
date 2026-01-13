@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+}
+
+group = 'jarhead'
+version = '1.7.0'
+
+// Modern Gradle 9.x requires Java 17+ for the build tool itself
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = uri('https://maven.brott.dev/') }
+}
+
+dependencies {
+    // Updated to JUnit 6.0.2 (latest stable in early 2026)
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.0.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.0.2'
+    
+    // RoadRunner Core (latest stable versioning)
+    implementation 'com.acmerobotics.roadrunner:core:0.5.5'
+    
+    // FlatLaf modern stable version
+    implementation 'com.formdev:flatlaf:3.7'
+}
+
+// Global strategy for copy tasks to avoid deprecation warnings in Gradle 8/9
+tasks.withType(Copy).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Main Jar configuration
+jar {
+    manifest {
+        attributes(
+            "Main-Class": "jarhead.Main"
+        )
+    }
+    // Resource sets are typically handled in the 'sourceSets' block 
+    // outside the jar task, but maintained here for your structure.
+}
+
+// Modern Fat Jar task using Provider API patterns
+task customFatJar(type: Jar) {
+    archiveBaseName = 'RRPathGen'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    manifest {
+        attributes 'Main-Class': 'rrpathgen.Main'
+    }
+
+    // Modern way to handle runtime classpath for fat jars
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
+
+test {
+    useJUnitPlatform()
+}
