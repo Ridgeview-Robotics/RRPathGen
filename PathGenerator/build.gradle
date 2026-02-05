@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'jarhead'
-version = '1.7.0'
+version = '1.9.0'
 
 // Modern Gradle 9.x requires Java 17+ for the build tool itself
 java {
