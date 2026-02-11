@@ -1,0 +1,6 @@
+*.properties
+.idea/vcs.xml
+.idea/RRPathGen.iml
+.idea/modules.xml
+.idea/misc.xml
+.idea/caches/deviceStreaming.xml
