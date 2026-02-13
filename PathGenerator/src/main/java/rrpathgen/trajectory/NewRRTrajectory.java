@@ -1,25 +1,9 @@
 package rrpathgen.trajectory;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.path.Path;
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import rrpathgen.Main;
 import rrpathgen.data.Marker;
 import rrpathgen.data.Node;
-import rrpathgen.data.NodeManager;
-import rrpathgen.data.ProgramProperties;
-import rrpathgen.trajectory.trajectorysequence.TrajectorySequence;
-import rrpathgen.trajectory.trajectorysequence.TrajectorySequenceBuilder;
-import rrpathgen.trajectory.trajectorysequence.sequencesegment.SequenceSegment;
-import rrpathgen.trajectory.trajectorysequence.sequencesegment.TrajectorySegment;
-import rrpathgen.trajectory.trajectorysequence.sequencesegment.TurnSegment;
-import rrpathgen.trajectory.trajectorysequence.sequencesegment.WaitSegment;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -49,6 +33,16 @@ public class NewRRTrajectory extends OldRRTrajectory{
         };
     }
 
+    private void initialHandler(StringBuilder sb, double x, double y, Node node){
+        if(Main.exportPanel.isInitial){
+            sb.append(String.format("= drive.actionBuilder(startPose)%n"));
+        }
+        else{
+            sb.append(String.format("= drive.actionBuilder(new Pose2d(%.2f, %.2f, Math.toRadians(%.2f)))%n",
+                    x, -y, (node.robotHeading + 90)));
+        }
+    }
+
 
     @Override
     public String constructExportString() {
@@ -57,8 +51,12 @@ public class NewRRTrajectory extends OldRRTrajectory{
         double y = Main.toInches(node.y);
 
         StringBuilder sb = new StringBuilder();
-        if(Main.exportPanel.addDataType) sb.append("TrajectorySequence ");
-        sb.append(String.format("%s = drive.trajectorySequenceBuilder(new Pose2d(%.2f, %.2f, Math.toRadians(%.2f)))%n",getCurrentManager().name, x, -y, (node.robotHeading +90)));
+
+
+        if(Main.exportPanel.addAction){
+            sb.append(String.format("Action %s ", getCurrentManager().name));
+            initialHandler(sb, x, y, node);
+        }
         //sort the markers
         List<Marker> markers = getCurrentManager().getMarkers();
         markers.sort(Comparator.comparingDouble(n -> n.displacement));
@@ -116,7 +114,6 @@ public class NewRRTrajectory extends OldRRTrajectory{
             }
         }
         sb.append(String.format(".build();%n"));
-        if(Main.exportPanel.addPoseEstimate) sb.append(String.format("drive.setPoseEstimate(%s.start());", getCurrentManager().name));
         return sb.toString();
     }
 }

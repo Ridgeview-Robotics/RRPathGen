@@ -2,8 +2,6 @@ package rrpathgen.trajectory;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.path.Path;
-import com.acmerobotics.roadrunner.path.PathSegment;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
@@ -333,7 +331,7 @@ public class OldRRTrajectory implements Trajectory{
         double y = Main.toInches(node.y);
 
         StringBuilder sb = new StringBuilder();
-        if(Main.exportPanel.addDataType) sb.append("TrajectorySequence ");
+        if(Main.exportPanel.addAction) sb.append("TrajectorySequence ");
         sb.append(String.format("%s = drive.trajectorySequenceBuilder(new Pose2d(%.2f, %.2f, Math.toRadians(%.2f)))%n",getCurrentManager().name, x, -y, (node.robotHeading +90)));
         //sort the markers
         List<Marker> markers = getCurrentManager().getMarkers();
@@ -392,7 +390,7 @@ public class OldRRTrajectory implements Trajectory{
             }
         }
         sb.append(String.format(".build();%n"));
-        if(Main.exportPanel.addPoseEstimate) sb.append(String.format("drive.setPoseEstimate(%s.start());", getCurrentManager().name));
+        if(Main.exportPanel.isInitial) sb.append(String.format("drive.setPoseEstimate(%s.start());", getCurrentManager().name));
         return sb.toString();
     }
 }

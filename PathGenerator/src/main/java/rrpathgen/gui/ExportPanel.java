@@ -11,10 +11,10 @@ public class ExportPanel extends JPanel {
 
     JTextArea field = new JTextArea();
     JScrollPane scroll = new JScrollPane(field);
-    JCheckBox dataType = new JCheckBox("Datatype", true);
-    JCheckBox poseEstimate = new JCheckBox("setPoseEstimate", false);
-    public boolean addDataType = true;
-    public boolean addPoseEstimate = false;
+    JCheckBox action = new JCheckBox("Action", true);
+    JCheckBox initialPosition = new JCheckBox("Initial Position", false);
+    public boolean addAction = true;
+    public boolean isInitial = false;
     JButton copy = new JButton("Copy to clipboard");
     Main main;
 
@@ -29,8 +29,8 @@ public class ExportPanel extends JPanel {
         this.setMinimumSize(new Dimension(200,10));
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        this.add(dataType, BorderLayout.WEST);
-        this.add(poseEstimate, BorderLayout.EAST);
+        this.add(action, BorderLayout.WEST);
+        this.add(initialPosition, BorderLayout.EAST);
         this.add(copy);
         this.add(scroll);
         this.setVisible(true);
@@ -41,12 +41,13 @@ public class ExportPanel extends JPanel {
             clipboard.setContents(selection, selection);
         });
 
-        dataType.addItemListener(e -> {
-            addDataType = e.getStateChange()==1;
+        action.addItemListener(e -> {
+            addAction = e.getStateChange()==1;
             main.buttonPanel.export();
         });
-        poseEstimate.addItemListener(e -> {
-            addPoseEstimate = e.getStateChange()==1;
+
+        initialPosition.addItemListener(e -> {
+            isInitial = e.getStateChange()==1;
             main.buttonPanel.export();
         });
 
